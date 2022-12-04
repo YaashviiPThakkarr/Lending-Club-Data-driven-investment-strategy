@@ -155,7 +155,7 @@ We can see that the performance of the models now is slightly better. Random For
 
 3. Regressing against  Non-Default returns 
 
-![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/nondefaultreturns.png)
+![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/non-defaultreturns.png)
 
 The performance of our models when regressed against non-defaulted loans is the best! Here again, Random Forest performs best (for the M2).
 
