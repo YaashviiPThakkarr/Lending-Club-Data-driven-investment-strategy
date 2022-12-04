@@ -66,6 +66,8 @@ However, making a few assumptions like considering the same loan amount (keeping
 
 #### Calculating Returns on Past historical loans 
 
+![alt text](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
+
 
  
 
