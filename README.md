@@ -65,8 +65,39 @@ However, making a few assumptions like considering the same loan amount (keeping
 -Total_pymnt refers to the total payment received to date. We should not use total_pymnt while training a model because total_pymnt will not be available to the model at the time of testing. Including this feature during training will lead to data leakage. 
 
 #### Calculating Returns on Past historical loans 
-
 ![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/roi.png)
+
+#### Calculating returns by loan grades 
+![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/roibygrade.png)
+
+The numbers are quite astonishing because we expected higher grade loans (like Grades E, F or G) to have a higher return. While this is true for the optimistic method, the returns seem to diminish for the return_PESS, return_INTa and return_INTb. 
+According to the numbers in the table mentioned above, we would invest in loan grade A, since it gives a higher return for most of the methods we calculated.
+
+#### Percentage of loans in each loan grade 
+![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/percofloans.png)
+
+#### Percentage of defaults by loan grade
+![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/defaultbygrade.png)
+
+Basically, 6.89% of Grade A loans default, while ~50% of Grade G loans default. As the loan grade increases, the percentage of defaulted loans also increases. (There is a positive correlation). 
+
+#### Average intrest rate by grades
+![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/avgint.png)
+
+For loan grade A, the average interest rate is 7.2%, while for the average interest rate is 27%. Essentially, the interest rate increases monotonically as the loan grade increases. (It pays off higher to invest in a riskier loan). 
+
+- *After outlier removal* : We observe that the data is much more balanced across the 3 loan statuses after we have removed outliers. Specifically, for the fully paid loans, none of the return variables (pessimistic and optimistic) are negative. Only the charged off loans have values greater than zero for recoveries.
+
+- *Feature selection*: Total_pymnt refers to the total payment received to date. 'Recoveries' refers to the post-charge-off gross recovery. We should not use either of these 2 variables while training a model because 'total_pymnt' and 'recoveries' will not be available to the model at the time of testing. Including this feature during training will lead to data leakage
+
+
+
+
+
+
+
+
+
 
 
  
