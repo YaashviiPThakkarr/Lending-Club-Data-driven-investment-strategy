@@ -135,8 +135,8 @@ Our observation is in line with our expectation.
 
 #### Time Stability Test of Model
 
-f1_2010:  0.7852554428586984
-f1_2016:  0.7894034536891681
+- f1_2010:  0.7852554428586984
+- f1_2016:  0.7894034536891681
 
 
 Hence, we can conclude that the performance of our model trained in 2010 performs slightly worse in 2017 than the model trained on more recent data in 2016. This is probably because our model might not be very stable because of the time-series nature of our data. For example, due to inflation, chances to default for the same amount of loan would be higher in 2017, than it would be in 2010. Therefore, models trained in 2016 would be able to better capture this than the models trained in 2010.
@@ -160,10 +160,10 @@ We can see that the performance of the models now is slightly better. Random For
 The performance of our models when regressed against non-defaulted loans is the best! Here again, Random Forest performs best (for the M2).
 
 The BEST 1000 loans one can invest in are the ones coming from the best_investment function described in our jupyter notebook, which takes a weighted average of the possible returns for the test set. The maximum returns we can get for each respective return method are:
-ret_PESS: 0.1003976993332276
-ret_OPT: 0.23371219777471391
-ret_INTa: 0.6136832195692166
-ret_INTb: 1.8562623510695344
+- ret_PESS: 0.1003976993332276
+- ret_OPT: 0.23371219777471391
+- ret_INTa: 0.6136832195692166
+- ret_INTb: 1.8562623510695344
 
 Default-Return gives the best possible solution as its returns are highest. We can pick the best 1000 loans by making predictions using the “Default-Return” strategy on the test data, sorting (in descending order) by the respective returns, and picking the top 1000. 
 
