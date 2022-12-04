@@ -66,7 +66,7 @@ However, making a few assumptions like considering the same loan amount (keeping
 
 #### Calculating Returns on Past historical loans 
 
-![alt text](Case outputs/defaultbygrade.png)
+![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/roi.png)
 
 
  
