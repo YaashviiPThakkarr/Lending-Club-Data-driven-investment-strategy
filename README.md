@@ -18,15 +18,15 @@ income, monthly FICO score, debt-to-income ratio, number of open credit lines, e
 
 High level data categories:
 
-*Borrower Profile metrics/demographics*: Metrics describing the profile of the borrower
+-*Borrower Profile metrics/demographics*: Metrics describing the profile of the borrower
 annual_inc, purpose, zip_code, emp_title, home_ownership, acc_now_delinq, addr_state, verification_status, emp_length, emp_title, emp_length, fico_range_low, fico_range_high 
-*Temporal Metrics*: Metrics relating to time
+-*Temporal Metrics*: Metrics relating to time
 mths_since_last_major_derog, mthsSinceLastDelinq, earliest_cr_line 
-*Loan metrics*: Metrics defining the loan status and loan terms. 
+-*Loan metrics*: Metrics defining the loan status and loan terms. 
 fundedAmnt, loanAmnt, term, url, effective_int_rate, installments, grade, sub_grade, title, purpose, loan_status, total_pymnt, last_pymnt_amnt 
-*Categorical Metrics*: Metrics which takes value from a fixed set 
+-*Categorical Metrics*: Metrics which takes value from a fixed set 
 Loan grade, employment Status, Loan Status, Verification status etc. 
-*Continuous Metrics*: Numerical metrics 
+-*Continuous Metrics*: Numerical metrics 
 num_op_rev_tl,num_rev_tl_bal_gt_0, num_sats, etc
 
 
@@ -90,6 +90,89 @@ For loan grade A, the average interest rate is 7.2%, while for the average inter
 
 - *Feature selection*: Total_pymnt refers to the total payment received to date. 'Recoveries' refers to the post-charge-off gross recovery. We should not use either of these 2 variables while training a model because 'total_pymnt' and 'recoveries' will not be available to the model at the time of testing. Including this feature during training will lead to data leakage
 
+After phase 2, we saved a pickle file post data imputation and feature selections to move to the modelling phase.
+
+### Modelling and Evaluation - Phase 3
+
+- Model Training (Phase 3 specifically after initial cleaning & outlier removal):
+1. Feature Engineering:
+We created the outcome column (True if loan_status is either Charged Off or Default, False otherwise). Create a feature for the length of a person's credit history at the time the loan is issued. We then downsampled the data to 50,000 observations and split the dataset into 30,000 training samples and 20,000 test samples.
+2. Evaluation:
+For model validation, we use the fit_classification() function that considers various evaluation measures. We use f1 score as the performance evaluation criteria for testing various models in our consideration set.
+
+We tried to experiment two different methods of splitting: 
+1. Random splitting
+The advantage of random data splitting procedure is that we can create as many different splits as needed, without impacting the ratio of the train-to-test samples. This helps in training our model for a wide variety of different train and test data combinations, thereby making the model robust. 
+
+Random Splitting would work poorly when our data has high autocorrelation. That is, when there is similarity between observations as a function of the time lag between them. Now, for our dataset, there are features like annual_income that would gradually change over the years. For such datasets, special care must be taken to split the data by ensuring no information/data leakage between the training, test or validation sets, which may exaggerate the model performance. Random Splitting would not be able to avoid data leakage for such datasets.
+
+2. Temporal Splitting
+This splitting criteria is naturally suited for time-series forecasting. This method would work well in identifying if the train and test distributions are different and if the data is temporal in nature. If we do a random split of the data which is temporal in nature, we would get a model which would try to predict a test data point which chronologically came before the training point; which does not make a lot of sense. 
+
+- Hyperparameters help is optimizing a model so that we get the optimal solution by minimizing the loss function. Hyperparameter tuning is important to increase the generalizability of any model. The hyper-parameters tuned for each of the model are as follows:
+
+![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/hyperparameter.png)
+
+We use weighted average f1-score as a performance measure because it gives a harmonic mean of precision and recall.
+
+![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/f1scores.png)
+
+Considering the F1 scores to evaluate the predictive power of the model, we can see that the predictive power of the model was 0.7235 when all the features were included, whereas it is 0.6948 when only “grade” was included in the L2 Logistic regression model. This indicates that the “grade” feature is actually quite predictive of the loan status.
+
+#### We run the models again after removing the grades and interest rate. 
+
+We use f1-score as  metrics to average the model performance for 100 random splits. These are the averages we obtain with standard deviation:
+
+![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/f1scores2.png)
+
+We can observe from the table that Random Forest  gives the highest f1-score (0.7509) in comparison to other models and has the least standard deviation (± 0.0031) indicating that it has higher generalizability power. This will help us in predicting the defaulters and non-defaulters more accurately. 
+
+The best performing model is Random Forest. Our model’s scores agree with the grades assigned by LendingClub. We go about this by taking an average of the predicted defaulters, grouping them by the loan grade. We expect to see that the average of the predicted defaulters would increase as the loan grade changes from A to G. (since A is the safest loan grade, which is least likely to default).
+Our observation is in line with our expectation. 
+
+![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/grades.png)
+
+
+#### Time Stability Test of Model
+
+f1_2010:  0.7852554428586984
+f1_2016:  0.7894034536891681
+
+
+Hence, we can conclude that the performance of our model trained in 2010 performs slightly worse in 2017 than the model trained on more recent data in 2016. This is probably because our model might not be very stable because of the time-series nature of our data. For example, due to inflation, chances to default for the same amount of loan would be higher in 2017, than it would be in 2010. Therefore, models trained in 2016 would be able to better capture this than the models trained in 2010.
+
+1. Regressing against all returns
+
+![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/allreturns.png)
+
+We can see that the performance of all the models is pretty poor. But Random Forest outperforms all other models. Moreover, the performance for M1 (optimistic) for RF is the best, while for M2 (pessimistic) is the worst.
+
+2. Regressing against Default returns
+
+![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/defaultreturns.png)
+
+We can see that the performance of the models now is slightly better. Random Forest outperforms all other models. Moreover, the performance for M1 (optimistic) for RF is the best, while for M3 is the worst.
+
+3. Regressing against  Non-Default returns 
+
+![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/nondefaultreturns.png)
+
+The performance of our models when regressed against non-defaulted loans is the best! Here again, Random Forest performs best (for the M2).
+
+The BEST 1000 loans one can invest in are the ones coming from the best_investment function described in our jupyter notebook, which takes a weighted average of the possible returns for the test set. The maximum returns we can get for each respective return method are:
+ret_PESS: 0.1003976993332276
+ret_OPT: 0.23371219777471391
+ret_INTa: 0.6136832195692166
+ret_INTb: 1.8562623510695344
+
+Default-Return gives the best possible solution as its returns are highest. We can pick the best 1000 loans by making predictions using the “Default-Return” strategy on the test data, sorting (in descending order) by the respective returns, and picking the top 1000. 
+
+The “Default-Return” investment strategy performs the best as it gives the highest returns for 2 of the 4 return methods we are computing.. 
+The random strategy performs poorly compared to the other strategies, it gives us losses when we calculate returns using M1. This could be because this model might tell us to invest in loans that are going to default. The data-driven strategies like Default, return and default-return perform much better than the random strategy. And the data-driven strategies give more conservative return estimates compared to the BEST model.
+
+![](https://github.com/YaashviiPThakkarr/Lending-Club-Data-driven-investment-strategy/blob/main/Case%20outputs/IRR.png)
+
+The above graph is plotted using “Default-Return” as the best strategy. We observe that the M1 return decreases with an increase in portfolio size. As the number of loans in the portfolio increases, the number of good loans to potentially invest in would decrease, making it difficult to match the return performance we get by modeling on a smaller portfolio of loans.
 
 
 
